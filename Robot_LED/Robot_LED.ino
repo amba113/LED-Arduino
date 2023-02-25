@@ -77,32 +77,35 @@ void loop() {
   //rainbow(1);             // Flowing rainbow cycle along the whole strip
   
   //theaterChaseRainbow(50); // Rainbow-enhanced theaterChase variant
+
   if (counter < 2){
-    inWipe(strip.Color(255,   0,   0), 25); // Red
-    outWipe(strip.Color(255,   150,   0), 25); // Yellow
-    inWipe(strip.Color(  0, 255,   0), 25); // Green
-    outWipe(strip.Color(0,   255,  175), 25); // Cyan
-    inWipe(strip.Color(  0,   0, 255), 25); // Blue
-    outWipe(strip.Color(  255,   0, 255), 25); // Magenta
+    inWipe(strip.Color(255, 0, 0), 25); // Red
+    outWipe(strip.Color(255, 150, 0), 25); // Yellow
+    inWipe(strip.Color(0, 255, 0), 25); // Green
+    outWipe(strip.Color(0, 255, 175), 25); // Cyan
+    inWipe(strip.Color(0, 0, 255), 25); // Blue
+    outWipe(strip.Color(255, 0, 255), 25); // Magenta
   }else if (counter < 4){
-    downWipe(strip.Color(255,   0,   0), 25); // Red
-    upWipe(strip.Color(255,   150,   0), 25); // Yellow
-    downWipe(strip.Color(  0, 255,   0), 25); // Green
-    upWipe(strip.Color(0,   255,  175), 25); // Cyan
-    downWipe(strip.Color(  0,   0, 255), 25); // Blue
-    upWipe(strip.Color(  255,   0, 255), 25); // Magenta
+    downWipe(strip.Color(255, 0, 0), 25); // Red
+    upWipe(strip.Color(255, 150, 0), 25); // Yellow
+    downWipe(strip.Color(0, 255, 0), 25); // Green
+    upWipe(strip.Color(0, 255,175), 25); // Cyan
+    downWipe(strip.Color(0, 0, 255), 25); // Blue
+    upWipe(strip.Color(255, 0, 255), 25); // Magenta
+  }else if (counter < 7){
+    colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, counter - 3, counter - 2);
+    colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, counter - 3, counter - 2);
+    colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, counter - 3, counter - 2);
   }else{
     counter = 0;
   }
   if (counter == 1){
     inWipe(strip.Color(  255,   255, 255), 25);
     outWipe(strip.Color(  0,   0, 0), 25);
-  } else if(counter == 3){
-    downWipe(strip.Color(  255,   255, 255), 25);
-    upWipe(strip.Color(  0,   0, 0), 25);
   }
-  
   counter ++;
+
+
 }
 
 
@@ -113,21 +116,6 @@ void loop() {
 // (as a single 'packed' 32-bit value, which you can get by calling
 // strip.Color(red, green, blue) as shown in the loop() function above),
 // and a delay time (in milliseconds) between pixels.
-void downWipe(uint32_t color, int wait) {
-  for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip...
-    strip.setPixelColor(i, color);         //  Set pixel's color (in RAM)
-    strip.show();                          //  Update strip to match
-    delay(wait);                           //  Pause for a moment
-  }
-}
-
-void upWipe(uint32_t color, int wait) {
-  for(int i=strip.numPixels() - 1; i > 0; i--) { // For each pixel in strip...
-    strip.setPixelColor(i, color);         //  Set pixel's color (in RAM)
-    strip.show();                          //  Update strip to match
-    delay(wait);                           //  Pause for a moment
-  }
-}
 
 // Theater-marquee-style chasing lights. Pass in a color (32-bit value,
 // a la strip.Color(r,g,b) as mentioned above), and a delay time (in ms)
@@ -188,6 +176,22 @@ void theaterChaseRainbow(int wait) {
   }
 }
 
+void downWipe(uint32_t color, int wait) {
+  for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip...
+    strip.setPixelColor(i, color);         //  Set pixel's color (in RAM)
+    strip.show();                          //  Update strip to match
+    delay(wait);                           //  Pause for a moment
+  }
+}
+
+void upWipe(uint32_t color, int wait) {
+  for(int i=strip.numPixels() - 1; i > 0; i--) { // For each pixel in strip...
+    strip.setPixelColor(i, color);         //  Set pixel's color (in RAM)
+    strip.show();                          //  Update strip to match
+    delay(wait);                           //  Pause for a moment
+  }
+}
+
 void outWipe(uint32_t color, int wait) {
   int x = 29;
   for(int i = 30; i < strip.numPixels(); i++){
@@ -205,6 +209,23 @@ void inWipe(uint32_t color, int wait) {
     strip.setPixelColor(i, color);
     strip.setPixelColor(x, color);
     x++;
+    strip.show();
+    delay(wait);
+  }
+}
+
+void colorSpin(uint32_t color1, uint32_t color2, int wait, int width, int num){
+  strip.fill(color1, 0);
+  int y;
+  for(int i = 0; i < strip.numPixels()/num; i++){
+    for(int n = 0; n < num; n++){
+      for(int x = 0; x < width; x++){
+        strip.setPixelColor((n*strip.numPixels()/num) + i + x, color2);
+        if(i > 0){
+        strip.setPixelColor((n*strip.numPixels()/num) + i - 1, color1);
+        }
+      }
+    }
     strip.show();
     delay(wait);
   }
