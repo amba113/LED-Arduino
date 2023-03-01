@@ -47,11 +47,18 @@ void setup() {
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(100); // Set BRIGHTNESS to about 1/5 (max = 255)
+
+  // initialize serial:
+  Serial.begin(115200);
 }
 
 
 // loop() function -- runs repeatedly as long as board is on ---------------
 int counter = 0;
+int num = 1;
+const unsigned int MAX_MESSAGE_LENGTH = 12;
+static char message[MAX_MESSAGE_LENGTH];
+static unsigned int pos = 0;
 void loop() {
   /*
   // Fill along the length of the strip in various colors...
@@ -77,7 +84,7 @@ void loop() {
   //rainbow(1);             // Flowing rainbow cycle along the whole strip
   
   //theaterChaseRainbow(50); // Rainbow-enhanced theaterChase variant
-
+/*
   if (counter < 2){
     inWipe(strip.Color(255, 0, 0), 25); // Red
     outWipe(strip.Color(255, 150, 0), 25); // Yellow
@@ -96,6 +103,8 @@ void loop() {
     colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, counter - 3, counter - 2);
     colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, counter - 3, counter - 2);
     colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, counter - 3, counter - 2);
+  }else if(counter < 9){
+    colorFlash2(strip.Color(0, 255, 0), strip.Color(0, 0, 255), 1000);
   }else{
     counter = 0;
   }
@@ -104,8 +113,47 @@ void loop() {
     outWipe(strip.Color(  0,   0, 0), 25);
   }
   counter ++;
+*/
+  if(Serial.available() > 0){
+    char inByte = Serial.read();
+    if (inByte != '\n' && (pos < MAX_MESSAGE_LENGTH - 1)){
+      message[pos] = inByte;
+      pos++;
+    } else {
+      message[pos] = '\0';
+      int newNum = atoi(message);
+      if (newNum != 0) num = newNum;
+      strip.fill(strip.Color(0, 0, 0), 0);
+      strip.show();
+      pos = 0;
+      delay(1000);
+    }
+  }
+  if (num == 1){
+    inWipe(strip.Color(255, 0, 0), 25); // Red
+    outWipe(strip.Color(255, 75, 0), 25); // Yellow
+    inWipe(strip.Color(0, 255, 0), 25); // Green
+    outWipe(strip.Color(0, 255, 175), 25); // Cyan
+    inWipe(strip.Color(0, 0, 255), 25); // Blue
+    outWipe(strip.Color(255, 0, 255), 25); // Magenta
+  } else if (num == 2){
+    downWipe(strip.Color(255, 0, 0), 25); // Red
+    upWipe(strip.Color(255, 150, 0), 25); // Yellow
+    downWipe(strip.Color(0, 255, 0), 25); // Green
+    upWipe(strip.Color(0, 255,175), 25); // Cyan
+    downWipe(strip.Color(0, 0, 255), 25); // Blue
+    upWipe(strip.Color(255, 0, 255), 25); // Magenta
+  } else if (num == 3){
+    colorSpin(strip.Color(255, 0, 65), strip.Color(150, 0, 255), 25, 3, 4);
+  } else if (num == 4){
+    colorFlash2(strip.Color(0, 255, 0), strip.Color(0, 0, 255), 1000);
+  } else {
+    strip.fill(strip.Color(255, 255, 255), 0);
+    strip.show();
+  }
 
 }
+
 
 
 // Some functions of our own for creating animated effects -----------------

@@ -49,28 +49,29 @@ void setup() {
   strip.setBrightness(50); // Set BRIGHTNESS to about 1/5 (max = 255)
 
   // initialize serial:
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 int num = 1;
-int curNum = 1;
+const unsigned int MAX_MESSAGE_LENGTH = 12;
+static char message[MAX_MESSAGE_LENGTH];
+static unsigned int pos = 0;
 // loop() function -- runs repeatedly as long as board is on ---------------
 void loop() {
-    // if (Serial.available() == 1){
-    // downWipe(strip.Color(255, 0, 0), 25);
-    // Serial.flush();
-    // } else if (Serial.available() == 2){
-    //   upWipe(strip.Color(0, 255, 0), 25);
-    //   Serial.flush();
-    // } else {
-    //   strip.fill(strip.Color(255, 255, 255), 0);
-    // }
   if(Serial.available() > 0){
-    num = Serial.parseInt();
+    char inByte = Serial.read();
+    if (inByte != '\n' && (pos < MAX_MESSAGE_LENGTH - 1)){
+      message[pos] = inByte;
+      pos++;
+    } else {
+      message[pos] = '\0';
+      int newNum = atoi(message);
+      if (newNum != 0) num = newNum;
+      pos = 0;
+      
+    }
   }
-  if(num > 0){
-    colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, 5, num);
-  }
+  colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, 5, num);
 }
 
 void downWipe(uint32_t color, int wait) {
@@ -96,7 +97,7 @@ void colorSpin(uint32_t color1, uint32_t color2, int wait, int width, int num){
       for(int x = 0; x < width; x++){
         strip.setPixelColor((n*strip.numPixels()/num) + i + x, color2);
         if(i > 0){
-        strip.setPixelColor((n*strip.numPixels()/num) + i - 1, color1);
+          strip.setPixelColor((n*strip.numPixels()/num) + i - 1, color1);
         }
       }
     }
