@@ -53,9 +53,9 @@ void setup() {
 }
 
 int num = 1;
+int curNum = 1;
 // loop() function -- runs repeatedly as long as board is on ---------------
 void loop() {
-  if (Serial.available() > 0){
     // if (Serial.available() == 1){
     // downWipe(strip.Color(255, 0, 0), 25);
     // Serial.flush();
@@ -65,13 +65,12 @@ void loop() {
     // } else {
     //   strip.fill(strip.Color(255, 255, 255), 0);
     // }
+  if(Serial.available() > 0){
     num = Serial.parseInt();
   }
-  colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, 5, num);
-  colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, 5, num);
-  colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, 5, num);
-  colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, 5, num);
-  colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, 5, num);
+  if(num > 0){
+    colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, 5, num);
+  }
 }
 
 void downWipe(uint32_t color, int wait) {

@@ -105,7 +105,6 @@ void loop() {
   }
   counter ++;
 
-
 }
 
 
@@ -229,4 +228,13 @@ void colorSpin(uint32_t color1, uint32_t color2, int wait, int width, int num){
     strip.show();
     delay(wait);
   }
+}
+
+void colorFlash2(uint32_t color1, uint32_t color2, int wait){
+  strip.fill(color1, 0);
+  strip.show();
+  delay(wait);
+  strip.fill(color2, 0);
+  strip.show();
+  delay(wait);
 }
