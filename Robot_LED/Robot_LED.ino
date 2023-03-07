@@ -35,6 +35,8 @@ Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 
 // setup() function -- runs once at startup --------------------------------
+# define DATA_SIZE 128
+bool *data[DATA_SIZE];
 
 void setup() {
   // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
@@ -50,6 +52,10 @@ void setup() {
 
   // initialize serial:
   Serial.begin(115200);
+
+  for(int i = 0; i < DATA_SIZE; i++){
+    *data[i] = false;
+  }
 }
 
 
@@ -113,7 +119,7 @@ void loop() {
     outWipe(strip.Color(  0,   0, 0), 25);
   }
   counter ++;
-*/
+
   if(Serial.available() > 0){
     char inByte = Serial.read();
     if (inByte != '\n' && (pos < MAX_MESSAGE_LENGTH - 1)){
@@ -151,6 +157,8 @@ void loop() {
     strip.fill(strip.Color(255, 255, 255), 0);
     strip.show();
   }
+  */
+  displayMorseCode(strip.Color(255, 255, 255), strip.Color(0, 0, 0), "-.-. .- -/-.. --- --.");
 
 }
 
@@ -285,4 +293,83 @@ void colorFlash2(uint32_t color1, uint32_t color2, int wait){
   strip.fill(color2, 0);
   strip.show();
   delay(wait);
+}
+
+void fillDataMorseCode(String code){
+  int stripIndex = 0;
+  for (int i = 0; i< code.length(); i++){
+    switch(code[i]){
+      case '.':
+//        strip.setPixelColor(stripIndex, text);
+        *data[stripIndex] = true;
+        stripIndex++;
+        break;
+      case '-':
+//        strip.setPixelColor(stripIndex, text);
+//        stripIndex++;
+//        strip.setPixelColor(stripIndex, text);
+//        stripIndex++;
+//        strip.setPixelColor(stripIndex, text);
+//        stripIndex++;
+        *data[stripIndex] = true;
+        stripIndex++;
+        *data[stripIndex] = true;
+        stripIndex++;
+        *data[stripIndex] = true;
+        stripIndex++;
+        break;
+      case ' ':
+//        strip.setPixelColor(stripIndex, bg);
+//        stripIndex++;
+        *data[stripIndex] = false;
+        stripIndex++;
+        break;
+      case '/':
+//        strip.setPixelColor(stripIndex, bg);
+//        stripIndex++;
+//        strip.setPixelColor(stripIndex, bg);
+//        stripIndex++;
+//        strip.setPixelColor(stripIndex, bg);
+//        stripIndex++;
+//        strip.setPixelColor(stripIndex, bg);
+//        stripIndex++;
+//        strip.setPixelColor(stripIndex, bg);
+//        stripIndex++;
+        *data[stripIndex] = false;
+        stripIndex++;
+        *data[stripIndex] = false;
+        stripIndex++;
+        *data[stripIndex] = false;
+        stripIndex++;
+        *data[stripIndex] = false;
+        stripIndex++;
+        *data[stripIndex] = false;
+        stripIndex++;
+        break;
+    }
+//    strip.setPixelColor(stripIndex, bg);
+//    stripIndex++;
+      *data[stripIndex] = false;
+      stripIndex++;
+  }
+//  strip.show();
+}
+
+void displayMorseCode(uint32_t on, uint32_t off, String code){
+  fillDataMorseCode(code);
+  int start = 0;
+  for (int pixel = strip.numPixels() - 1; pixel >= 0; pixel --){
+    for (int i = start; i < strip.numPixels() + start; i++){
+      switch(*data[i]){
+        case true:
+          strip.setPixelColor(pixel, on);
+          break;
+        case false:
+          strip.setPixelColor(pixel, off);
+          break;
+      }
+    }
+    strip.show();
+  }
+   
 }
