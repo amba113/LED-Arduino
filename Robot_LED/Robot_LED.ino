@@ -1,22 +1,9 @@
-// A basic everyday NeoPixel strip test program.
-
-// NEOPIXEL BEST PRACTICES for most reliable operation:
-// - Add 1000 uF CAPACITOR between NeoPixel strip's + and - connections.
-// - MINIMIZE WIRING LENGTH between microcontroller board and first pixel.
-// - NeoPixel strip's DATA-IN should pass through a 300-500 OHM RESISTOR.
-// - AVOID connecting NeoPixels on a LIVE CIRCUIT. If you must, ALWAYS
-//   connect GROUND (-) first, then +, then data.
-// - When using a 3.3V microcontroller with a 5V-powered NeoPixel strip,
-//   a LOGIC-LEVEL CONVERTER on the data line is STRONGLY RECOMMENDED.
-// (Skipping these may work OK on your workbench but can fail in the field)
-
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
  #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
 
 // Which pin on the Arduino is connected to the NeoPixels?
-// On a Trinket or Gemma we suggest changing this to 1:
 #define LED_PIN    6
 
 // How many NeoPixels are attached to the Arduino?
@@ -35,8 +22,63 @@ Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 
 // setup() function -- runs once at startup --------------------------------
-# define DATA_SIZE 128
-bool *data[DATA_SIZE];
+# define DATA_SIZE 312
+bool data[DATA_SIZE];
+
+String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 .,?;:-/\'\"_+*=)(";
+String morse[] = {".- ",     //A
+                  "-... ",   //B
+                  "-.-. ",   //C 
+                  "-.. ",    //D
+                  ". ",      //E
+                  "..-. ",   //F
+                  "--. ",    //G
+                  ".... ",   //H
+                  ".. ",     //I
+                  ".--- ",   //J
+                  "-.- ",    //K
+                  ".-.. ",   //L
+                  "-- ",     //M
+                  "-. ",     //N
+                  "--- ",    //O
+                  ".--. ",   //P
+                  "--.- ",   //Q
+                  ".-. ",    //R
+                  "... ",    //S
+                  "- ",      //T
+                  "..- ",    //U
+                  "...- ",   //V
+                  ".-- ",    //W
+                  "-..- ",   //X
+                  "-.-- ",   //Y
+                  "--.. ",   //Z
+                  ".---- ",  //1
+                  "..--- ",  //2
+                  "...-- ",  //3
+                  "....- ",  //4
+                  "..... ",  //5
+                  "-.... ",  //6
+                  "--... ",  //7
+                  "---.. ",  //8
+                  "----. ",  //9
+                  "----- ",  //0
+                  "/",      //Space
+                  ".-.-.- ", //.
+                  "--..-- ", //,
+                  "..--.. ", //?
+                  "-.-.-. ", //;
+                  "---... ", //:
+                  "-...- ",  //-
+                  "-..-. ",  ///
+                  ".----. ", //'
+                  ".-..-. ", //"
+                  "..--.- ", //_
+                  ".-.-. ",  //+
+                  "-..- ",   //*
+                  "-...- ",  //=
+                  "-.--.- ", //)
+                  "-.--. ",  //(                  
+                  };
 
 void setup() {
   // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
@@ -48,78 +90,21 @@ void setup() {
 
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
-  strip.setBrightness(100); // Set BRIGHTNESS to about 1/5 (max = 255)
+  strip.setBrightness(75); // Set BRIGHTNESS to about 1/5 (max = 255)
 
   // initialize serial:
   Serial.begin(115200);
 
-  for(int i = 0; i < DATA_SIZE; i++){
-    *data[i] = false;
-  }
 }
 
 
 // loop() function -- runs repeatedly as long as board is on ---------------
-int counter = 0;
 int num = 1;
 const unsigned int MAX_MESSAGE_LENGTH = 12;
 static char message[MAX_MESSAGE_LENGTH];
 static unsigned int pos = 0;
-void loop() {
-  /*
-  // Fill along the length of the strip in various colors...
-  colorWipe(strip.Color(255,   0,   0), 10); // Red
-  colorWipe(strip.Color(255,   200,   0), 10); // Yellow
-  colorWipe(strip.Color(  0, 255,   0), 10); // Green
-  colorWipe(strip.Color(0,   255,  255), 10); // Cyan
-  colorWipe(strip.Color(  0,   0, 255), 10); // Blue
-  colorWipe(strip.Color(  255,   0, 255), 10); // Magenta
-  colorWipe(strip.Color(  255,   255, 255), 10); // White
-  colorWipe(strip.Color(  0,   0, 0), 10); // black
-
-  */
-  /*
-  // Do a theater marquee effect in various colors...
-  theaterChase(strip.Color(127, 127, 127), 50); // White, half brightness
-  theaterChase(strip.Color(127,   0,   0), 50); // Red, half brightness
-  theaterChase(strip.Color(  0,   0, 127), 50); // Blue, half brightness
-  
-  */
-  
-
-  //rainbow(1);             // Flowing rainbow cycle along the whole strip
-  
-  //theaterChaseRainbow(50); // Rainbow-enhanced theaterChase variant
+void loop() {\
 /*
-  if (counter < 2){
-    inWipe(strip.Color(255, 0, 0), 25); // Red
-    outWipe(strip.Color(255, 150, 0), 25); // Yellow
-    inWipe(strip.Color(0, 255, 0), 25); // Green
-    outWipe(strip.Color(0, 255, 175), 25); // Cyan
-    inWipe(strip.Color(0, 0, 255), 25); // Blue
-    outWipe(strip.Color(255, 0, 255), 25); // Magenta
-  }else if (counter < 4){
-    downWipe(strip.Color(255, 0, 0), 25); // Red
-    upWipe(strip.Color(255, 150, 0), 25); // Yellow
-    downWipe(strip.Color(0, 255, 0), 25); // Green
-    upWipe(strip.Color(0, 255,175), 25); // Cyan
-    downWipe(strip.Color(0, 0, 255), 25); // Blue
-    upWipe(strip.Color(255, 0, 255), 25); // Magenta
-  }else if (counter < 7){
-    colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, counter - 3, counter - 2);
-    colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, counter - 3, counter - 2);
-    colorSpin(strip.Color(255, 0, 255), strip.Color(0, 255, 0), 25, counter - 3, counter - 2);
-  }else if(counter < 9){
-    colorFlash2(strip.Color(0, 255, 0), strip.Color(0, 0, 255), 1000);
-  }else{
-    counter = 0;
-  }
-  if (counter == 1){
-    inWipe(strip.Color(  255,   255, 255), 25);
-    outWipe(strip.Color(  0,   0, 0), 25);
-  }
-  counter ++;
-
   if(Serial.available() > 0){
     char inByte = Serial.read();
     if (inByte != '\n' && (pos < MAX_MESSAGE_LENGTH - 1)){
@@ -135,46 +120,10 @@ void loop() {
       delay(1000);
     }
   }
-  if (num == 1){
-    inWipe(strip.Color(255, 0, 0), 25); // Red
-    outWipe(strip.Color(255, 75, 0), 25); // Yellow
-    inWipe(strip.Color(0, 255, 0), 25); // Green
-    outWipe(strip.Color(0, 255, 175), 25); // Cyan
-    inWipe(strip.Color(0, 0, 255), 25); // Blue
-    outWipe(strip.Color(255, 0, 255), 25); // Magenta
-  } else if (num == 2){
-    downWipe(strip.Color(255, 0, 0), 25); // Red
-    upWipe(strip.Color(255, 150, 0), 25); // Yellow
-    downWipe(strip.Color(0, 255, 0), 25); // Green
-    upWipe(strip.Color(0, 255,175), 25); // Cyan
-    downWipe(strip.Color(0, 0, 255), 25); // Blue
-    upWipe(strip.Color(255, 0, 255), 25); // Magenta
-  } else if (num == 3){
-    colorSpin(strip.Color(255, 0, 65), strip.Color(150, 0, 255), 25, 3, 4);
-  } else if (num == 4){
-    colorFlash2(strip.Color(0, 255, 0), strip.Color(0, 0, 255), 1000);
-  } else {
-    strip.fill(strip.Color(255, 255, 255), 0);
-    strip.show();
-  }
   */
-  displayMorseCode(strip.Color(255, 255, 255), strip.Color(0, 0, 0), "-.-. .- -/-.. --- --.");
-
+  colorSpin(strip.Color(0, 255, 255), strip.Color(255, 30, 20), 50, 3, 3);
 }
 
-
-
-// Some functions of our own for creating animated effects -----------------
-
-// Fill strip pixels one after another with a color. Strip is NOT cleared
-// first; anything there will be covered pixel by pixel. Pass in color
-// (as a single 'packed' 32-bit value, which you can get by calling
-// strip.Color(red, green, blue) as shown in the loop() function above),
-// and a delay time (in milliseconds) between pixels.
-
-// Theater-marquee-style chasing lights. Pass in a color (32-bit value,
-// a la strip.Color(r,g,b) as mentioned above), and a delay time (in ms)
-// between frames.
 void theaterChase(uint32_t color, int wait) {
   for(int a=0; a<10; a++) {  // Repeat 10 times...
     for(int b=0; b<3; b++) { //  'b' counts from 0 to 2...
@@ -189,61 +138,44 @@ void theaterChase(uint32_t color, int wait) {
   }
 }
 
-// Rainbow cycle along whole strip. Pass delay time (in ms) between frames.
 void rainbow(int wait) {
-  // Hue of first pixel runs 5 complete loops through the color wheel.
-  // Color wheel has a range of 65536 but it's OK if we roll over, so
-  // just count from 0 to 5*65536. Adding 256 to firstPixelHue each time
-  // means we'll make 5*65536/256 = 1280 passes through this loop:
   for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
-    // strip.rainbow() can take a single argument (first pixel hue) or
-    // optionally a few extras: number of rainbow repetitions (default 1),
-    // saturation and value (brightness) (both 0-255, similar to the
-    // ColorHSV() function, default 255), and a true/false flag for whether
-    // to apply gamma correction to provide 'truer' colors (default true).
     strip.rainbow(firstPixelHue);
-    // Above line is equivalent to:
-    // strip.rainbow(firstPixelHue, 1, 255, 255, true);
-    strip.show(); // Update strip with new contents
-    delay(wait);  // Pause for a moment
+    strip.show();
+    delay(wait);
   }
 }
 
-// Rainbow-enhanced theater marquee. Pass delay time (in ms) between frames.
 void theaterChaseRainbow(int wait) {
-  int firstPixelHue = 0;     // First pixel starts at red (hue 0)
-  for(int a=0; a<30; a++) {  // Repeat 30 times...
-    for(int b=0; b<3; b++) { //  'b' counts from 0 to 2...
-      strip.clear();         //   Set all pixels in RAM to 0 (off)
-      // 'c' counts up from 'b' to end of strip in increments of 3...
+  int firstPixelHue = 0;
+  for(int a=0; a<30; a++) {
+    for(int b=0; b<3; b++) {
+      strip.clear();
       for(int c=b; c<strip.numPixels(); c += 3) {
-        // hue of pixel 'c' is offset by an amount to make one full
-        // revolution of the color wheel (range 65536) along the length
-        // of the strip (strip.numPixels() steps):
-        int      hue   = firstPixelHue + c * 65536L / strip.numPixels();
-        uint32_t color = strip.gamma32(strip.ColorHSV(hue)); // hue -> RGB
-        strip.setPixelColor(c, color); // Set pixel 'c' to value 'color'
+        int hue = firstPixelHue + c * 65536L / strip.numPixels();
+        uint32_t color = strip.gamma32(strip.ColorHSV(hue));
+        strip.setPixelColor(c, color);
       }
-      strip.show();                // Update strip with new contents
-      delay(wait);                 // Pause for a moment
-      firstPixelHue += 65536 / 90; // One cycle of color wheel over 90 frames
+      strip.show();
+      delay(wait);
+      firstPixelHue += 65536 / 90;
     }
   }
 }
 
 void downWipe(uint32_t color, int wait) {
-  for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip...
-    strip.setPixelColor(i, color);         //  Set pixel's color (in RAM)
-    strip.show();                          //  Update strip to match
-    delay(wait);                           //  Pause for a moment
+  for(int i=0; i<strip.numPixels(); i++) {
+    strip.setPixelColor(i, color);
+    strip.show();
+    delay(wait);
   }
 }
 
 void upWipe(uint32_t color, int wait) {
-  for(int i=strip.numPixels() - 1; i > 0; i--) { // For each pixel in strip...
-    strip.setPixelColor(i, color);         //  Set pixel's color (in RAM)
-    strip.show();                          //  Update strip to match
-    delay(wait);                           //  Pause for a moment
+  for(int i=strip.numPixels() - 1; i > 0; i--) {
+    strip.setPixelColor(i, color);
+    strip.show();
+    delay(wait);
   }
 }
 
@@ -295,81 +227,151 @@ void colorFlash2(uint32_t color1, uint32_t color2, int wait){
   delay(wait);
 }
 
-void fillDataMorseCode(String code){
-  int stripIndex = 0;
-  for (int i = 0; i< code.length(); i++){
-    switch(code[i]){
-      case '.':
-//        strip.setPixelColor(stripIndex, text);
-        *data[stripIndex] = true;
-        stripIndex++;
-        break;
-      case '-':
-//        strip.setPixelColor(stripIndex, text);
-//        stripIndex++;
-//        strip.setPixelColor(stripIndex, text);
-//        stripIndex++;
-//        strip.setPixelColor(stripIndex, text);
-//        stripIndex++;
-        *data[stripIndex] = true;
-        stripIndex++;
-        *data[stripIndex] = true;
-        stripIndex++;
-        *data[stripIndex] = true;
-        stripIndex++;
-        break;
-      case ' ':
-//        strip.setPixelColor(stripIndex, bg);
-//        stripIndex++;
-        *data[stripIndex] = false;
-        stripIndex++;
-        break;
-      case '/':
-//        strip.setPixelColor(stripIndex, bg);
-//        stripIndex++;
-//        strip.setPixelColor(stripIndex, bg);
-//        stripIndex++;
-//        strip.setPixelColor(stripIndex, bg);
-//        stripIndex++;
-//        strip.setPixelColor(stripIndex, bg);
-//        stripIndex++;
-//        strip.setPixelColor(stripIndex, bg);
-//        stripIndex++;
-        *data[stripIndex] = false;
-        stripIndex++;
-        *data[stripIndex] = false;
-        stripIndex++;
-        *data[stripIndex] = false;
-        stripIndex++;
-        *data[stripIndex] = false;
-        stripIndex++;
-        *data[stripIndex] = false;
-        stripIndex++;
-        break;
+int serialGet(){
+  int number;
+  if(Serial.available() > 0){
+    number = 0;
+    char inByte = Serial.read();
+    if (inByte != '\n' && (pos < MAX_MESSAGE_LENGTH - 1)){
+      message[pos] = inByte;
+      pos++;
+    } else {
+      message[pos] = '\0';
+      int newNum = atoi(message);
+      if (newNum != 0) number = newNum;
     }
-//    strip.setPixelColor(stripIndex, bg);
-//    stripIndex++;
-      *data[stripIndex] = false;
-      stripIndex++;
   }
-//  strip.show();
+  Serial.println(number);
+  return number;
 }
 
-void displayMorseCode(uint32_t on, uint32_t off, String code){
-  fillDataMorseCode(code);
-  int start = 0;
-  for (int pixel = strip.numPixels() - 1; pixel >= 0; pixel --){
-    for (int i = start; i < strip.numPixels() + start; i++){
-      switch(*data[i]){
+String dataToStr(){
+  String out = "";
+  for (int i = 0; i< DATA_SIZE; i++){
+    if(data[i]){
+      out += '1';
+    } else {
+      out += '0';
+    }
+  }
+  return out;
+}
+
+void fillDataMorseCode(String code, bool debug){
+  int index = 0;
+  if(debug) Serial.println(code);
+  for (int i = 0; i < code.length(); i++){
+    if(debug) Serial.print(i);
+    if(debug) Serial.print(", ");
+    if(debug) Serial.println(code.charAt(i));
+    switch(code.charAt(i)){
+      case '.':
+        if(debug) Serial.println("\t got . ");
+        data[index] = true;
+        index++;
+        break;
+      case '-':
+        if(debug) Serial.println("\t got - ");
+        data[index] = true;
+        index++;
+        data[index] = true;
+        index++;
+        data[index] = true;
+        index++;
+        break;
+      case ' ':
+        if(debug) Serial.println("\t got space");
+        data[index] = false;
+        index++;
+        break;
+      case '/':
+        if(debug) Serial.println("\t got /");
+        data[index] = false;
+        index++;
+        data[index] = false;
+        index++;
+        data[index] = false;
+        index++;
+        data[index] = false;
+        index++;
+        data[index] = false;
+        index++;
+        break;
+    }
+      data[index] = false;
+      index++;
+  }
+}
+
+void scrollMorseCode(uint32_t on, uint32_t off, String phrase, int wait){
+  fillDataMorseCode(codeConvert(phrase), false);
+  //Start
+  for(int d = strip.numPixels() - 1; d >= 0; d--){
+    for(int td = 0; td <= strip.numPixels() - d; td++){
+      switch(data[td]){
+        Serial.println(data[td]);
         case true:
-          strip.setPixelColor(pixel, on);
+          strip.setPixelColor(d + td, on);
           break;
         case false:
-          strip.setPixelColor(pixel, off);
+          strip.setPixelColor(d + td, off);
           break;
       }
     }
     strip.show();
+    delay(wait);
   }
-   
+  //Middle
+  for(int s = 1; s <= sizeof(data) - strip.numPixels() + 1; s++){
+    for(int d = 0; d <= strip.numPixels(); d++){
+      switch(data[s + d]){
+        Serial.println(data[s + d]);
+        case true:
+//          Serial.println("Mid true");
+          strip.setPixelColor(d, on);
+          break;
+        case false:
+//          Serial.println("Mid false");
+          strip.setPixelColor(d, off);
+          break;
+      }
+    }
+    strip.show();
+    delay(wait);
+  }
+  //End
+  for(int i = 0; i < strip.numPixels(); i++){
+    for(int d = 0; d < strip.numPixels(); d++){
+      strip.setPixelColor(d, strip.getPixelColor(d + 1));
+    }
+    strip.setPixelColor(strip.numPixels() - 1, off);
+    strip.show();
+    delay(wait);
+  }
+}
+
+void flashMorseCode(uint32_t on, uint32_t off, String phrase, int wait){
+  fillDataMorseCode(codeConvert(phrase), false);
+  for(int d = 0; d < DATA_SIZE; d++){
+    switch(data[d]){
+      case true:
+        strip.fill(on, 0);
+        break;
+      case false:
+        strip.fill(off, 0);
+        break;
+    }
+    strip.show();
+    delay(wait);
+  } 
+}
+
+String codeConvert(String word){
+  word.toUpperCase();
+  String out = "";
+  for(int i = 0; i < word.length(); i++){
+    int c = letters.indexOf(word.charAt(i));
+    out += morse[c];
+  }
+  return out;
 }
