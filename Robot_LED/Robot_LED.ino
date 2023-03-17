@@ -375,3 +375,22 @@ String codeConvert(String word){
   }
   return out;
 }
+
+void squareJump(uint32_t base, uint32_t color, int wait){
+  strip.fill(base, 0);
+  strip.fill(color, 0, 12);
+  strip.fill(color, 58, -1);
+  strip.show();
+  delay(wait);
+  strip.fill(base, 0);
+  strip.fill(color, 13, 27);
+  strip.show();
+  delay(wait);
+  strip.fill(base, 0);
+  strip.fill(color, 28, 42);
+  strip.show();
+  delay(wait);
+  strip.fill(base, 0);
+  strip.fill(color, 43, 57);
+  strip.show();
+}
