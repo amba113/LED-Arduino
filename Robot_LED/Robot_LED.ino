@@ -376,21 +376,21 @@ String codeConvert(String word){
   return out;
 }
 
-void squareJump(uint32_t base, uint32_t color, int wait){
+void squareJump(uint32_t base, uint32_t color, int wait, int space, int size){
   strip.fill(base, 0);
-  strip.fill(color, 0, 12);
-  strip.fill(color, 58, -1);
+  strip.fill(color, 0, size);
+  strip.fill(color, strip.numPixels() - (4*size + 3*space), -1);
   strip.show();
   delay(wait);
   strip.fill(base, 0);
-  strip.fill(color, 13, 27);
+  strip.fill(color, size + space, 2*size + space);
   strip.show();
   delay(wait);
   strip.fill(base, 0);
-  strip.fill(color, 28, 42);
+  strip.fill(color, 2*size + 2*space, 3*size + 2*space);
   strip.show();
   delay(wait);
   strip.fill(base, 0);
-  strip.fill(color, 43, 57);
+  strip.fill(color, 3*size + 3*space, 4*size + 3*space);
   strip.show();
 }
