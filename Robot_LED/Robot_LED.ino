@@ -121,7 +121,8 @@ void loop() {\
     }
   }
   */
-  colorSpin(strip.Color(0, 255, 255), strip.Color(255, 30, 20), 50, 3, 3);
+  // colorSpin(strip.Color(0, 255, 255), strip.Color(255, 30, 20), 50, 3, 3);
+  squareJump(strip.Color(0, 0, 0), strip.Color(255, 255, 255), 50);
 }
 
 void theaterChase(uint32_t color, int wait) {
@@ -376,21 +377,22 @@ String codeConvert(String word){
   return out;
 }
 
-void squareJump(uint32_t base, uint32_t color, int wait, int space, int size){
+void squareJump(uint32_t base, uint32_t color, int wait){
   strip.fill(base, 0);
-  strip.fill(color, 0, size);
-  strip.fill(color, strip.numPixels() - (4*size + 3*space), -1);
+  strip.fill(color, 2, 10);
+  strip.fill(color, strip.numPixels() - 10, 9);
   strip.show();
   delay(wait);
   strip.fill(base, 0);
-  strip.fill(color, size + space, 2*size + space);
+  strip.fill(color, 12, 12);
   strip.show();
   delay(wait);
   strip.fill(base, 0);
-  strip.fill(color, 2*size + 2*space, 3*size + 2*space);
+  strip.fill(color, 24, 10);
   strip.show();
   delay(wait);
   strip.fill(base, 0);
-  strip.fill(color, 3*size + 3*space, 4*size + 3*space);
+  strip.fill(color, 0, 2);
+  strip.fill(color, strip.numPixels() - 10 - 12, 12);
   strip.show();
 }
